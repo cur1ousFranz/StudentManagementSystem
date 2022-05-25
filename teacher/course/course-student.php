@@ -2,7 +2,7 @@
 session_start();
 include('../../database-connection/pdo.php');
 include('../../navbar-homepage.php');
-include('../../cdn.html');
+include('../../include-link.html');
 
 
 if (isset($_SESSION['ID'])) {
