@@ -1,7 +1,4 @@
 <?php
-
-use LDAP\Result;
-
 session_start();
 include('../../database-connection/pdo.php');
 include('../../navbar-homepage.php');
@@ -47,10 +44,10 @@ if (isset($_SESSION['ID'])) {
                                     <path fill-rule="evenodd" d="M5 11.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zm-3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm0 4a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm0 4a1 1 0 1 0 0-2 1 1 0 0 0 0 2z" />
                                 </svg>&nbsp;Dashboard
                             </a>
-                            <a href="../../teacher/course/courses.php?page=1" class="list-group-item" style="font-size: 20px;">
+                            <a href="../../teacher/subject/subject.php?page=1" class="list-group-item" style="font-size: 20px;">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-book" viewBox="0 0 16 16">
                                     <path d="M1 2.828c.885-.37 2.154-.769 3.388-.893 1.33-.134 2.458.063 3.112.752v9.746c-.935-.53-2.12-.603-3.213-.493-1.18.12-2.37.461-3.287.811V2.828zm7.5-.141c.654-.689 1.782-.886 3.112-.752 1.234.124 2.503.523 3.388.893v9.923c-.918-.35-2.107-.692-3.287-.81-1.094-.111-2.278-.039-3.213.492V2.687zM8 1.783C7.015.936 5.587.81 4.287.94c-1.514.153-3.042.672-3.994 1.105A.5.5 0 0 0 0 2.5v11a.5.5 0 0 0 .707.455c.882-.4 2.303-.881 3.68-1.02 1.409-.142 2.59.087 3.223.877a.5.5 0 0 0 .78 0c.633-.79 1.814-1.019 3.222-.877 1.378.139 2.8.62 3.681 1.02A.5.5 0 0 0 16 13.5v-11a.5.5 0 0 0-.293-.455c-.952-.433-2.48-.952-3.994-1.105C10.413.809 8.985.936 8 1.783z" />
-                                </svg>&nbsp;Course
+                                </svg>&nbsp;Subject
                             </a>
                             <a class="list-group-item active" style="font-size: 20px;" data-bs-toggle="tab">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-person-fill" viewBox="0 0 16 16">
@@ -96,21 +93,21 @@ if (isset($_SESSION['ID'])) {
                                             <div class="row">
                                                 <div class="form-floating col-6">
                                                     <input id="studentno" type="text" class=" form-control mt-2" placeholder="Student No." name="studentno" autocomplete="off" maxlength="20" required>
-                                                    <label for="coursename">&nbsp;&nbsp;Student ID No.</label>
+                                                    <label for="studentno">&nbsp;&nbsp;Student ID No.</label>
                                                 </div>
                                                 <div class="form-floating col-6">
-                                                    <input id="middlename" type="text" class=" form-control mt-2" placeholder="First name" name="middlename" autocomplete="off" maxlength="20" required>
-                                                    <label for="middlename">&nbsp;&nbsp;Middle Name</label>
+                                                    <input id="firstname" type="text" class=" form-control mt-2" placeholder="First name" name="firstname" autocomplete="off" maxlength="20" required>
+                                                    <label for="firstname">&nbsp;&nbsp;First Name</label>
                                                 </div>
                                             </div>
 
                                             <div class="row">
                                                 <div class="form-floating col-6">
-                                                    <input id="firstname" type="text" class=" form-control mt-2" placeholder="First Name" name="firstname" autocomplete="off" maxlength="20" required>
-                                                    <label for="firstname">&nbsp;&nbsp;First Name</label>
+                                                    <input id="middlename" type="text" class=" form-control mt-2" placeholder="Middle Name" name="middlename" autocomplete="off" maxlength="20" required>
+                                                    <label for="middlename">&nbsp;&nbsp;Middle Name</label>
                                                 </div>
                                                 <div class="form-floating col-6">
-                                                    <input id="lastname" type="text" class=" form-control mt-2" placeholder="First name" name="lastname" autocomplete="off" maxlength="20" required>
+                                                    <input id="lastname" type="text" class=" form-control mt-2" placeholder="Last name" name="lastname" autocomplete="off" maxlength="20" required>
                                                     <label for="lastname">&nbsp;&nbsp;Last Name</label>
                                                 </div>
                                             </div>
@@ -122,8 +119,8 @@ if (isset($_SESSION['ID'])) {
                                                 </div>
                                                 <div class="form-floating col-6 mt-2">
                                                     <select class="form-select" id="gender" name="gender" required>
-                                                        <option value="male">Male</option>
-                                                        <option value="female">Female</option>
+                                                        <option value="Male">Male</option>
+                                                        <option value="Female">Female</option>
                                                     </select>
                                                     <label for="gender">&nbsp;&nbsp;Gender</label>
                                                 </div>
@@ -131,16 +128,15 @@ if (isset($_SESSION['ID'])) {
 
                                             <div class="row">
                                                 <div class="form-floating col-6 mt-2">
-                                                    <select class="form-select" id="civilstatus" name="civilstatus" required>
-                                                        <option value="single">Single</option>
-                                                        <option value="married">Married</option>
-                                                        <option value="widowed">Widowed</option>
+                                                    <select class="form-select" id="civilstatus" name="course" required>
+                                                        <option value="Single">Single</option>
+                                                        <option value="Married">Married</option>
                                                     </select>
                                                     <label for="civilstatus">&nbsp;&nbsp;Civil Status</label>
                                                 </div>
                                                 <div class="form-floating col-6 mt-2">
                                                     <select class="form-select" id="nationality" name="nationality" required>
-                                                        <option value="filipino">Filipino</option>
+                                                        <option value="Filipino">Filipino</option>
                                                     </select>
                                                     <label for="filipino">&nbsp;&nbsp;Nationality</label>
                                                 </div>
@@ -176,8 +172,8 @@ if (isset($_SESSION['ID'])) {
                                 <th>Last Name</th>
                                 <th>Age</th>
                                 <th>Gender</th>
-                                <th>Civil Status</th>
-                                <th>Nationality</th>
+                                <th>Subjects</th>
+                                <th>Course</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>

@@ -1,54 +1,35 @@
 <!-- INSERTING DATA TO DATABASE -->
 <?php
 
-if (!empty($_POST['coursename']) && !empty($_POST['coursecode']) && !empty($_POST['coursetime'])) {
+    if (!empty($_POST['subjectname']) && !empty($_POST['subjectcode']) 
+    && !empty($_POST['starttime']) && !empty($_POST['endtime']) && !empty($_POST['sync'])) {
 
-    $coursename = $_POST['coursename'];
-    $coursecode = $_POST['coursecode'];
-    $coursetime = $_POST['coursetime'];
+    $subjectname = $_POST['subjectname'];
+    $subjectcode = $_POST['subjectcode'];
+    $starttime = $_POST['starttime'];
+    $endtime = $_POST['endtime'];
+    $sync = $_POST['sync'];
     $teacherid = $_SESSION['ID'];
 
-    $stmt = $pdo->prepare("INSERT INTO course (course_name, course_code, course_time, teacher_id)
-VALUES (:coursename, :coursecode, :coursetime, :teacherid)");
+    $stmt = $pdo->prepare("INSERT INTO subject (subject_name, subject_code, start_time, end_time, sync_date, teacher_id)
+    VALUES (:subjectname, :subjectcode, :starttime, :endtime, :sync, :teacherid)");
 
-    $stmt->bindParam(':coursename', $coursename);
-    $stmt->bindParam(':coursecode', $coursecode);
-    $stmt->bindParam(':coursetime', $coursetime);
+    $stmt->bindParam(':subjectname', $subjectname);
+    $stmt->bindParam(':subjectcode', $subjectcode);
+    $stmt->bindParam(':starttime', $starttime);
+    $stmt->bindParam(':endtime', $endtime);
+    $stmt->bindParam(':sync', $sync);
     $stmt->bindParam(':teacherid', $teacherid);
 
-    $stmt1 = "SELECT course_code FROM course";
-    $result = $pdo->query($stmt1);
-
-    if ($result->rowCount() > 0) {
-
-        $isExist = false;
-
-        foreach ($result as $data) {
-            if ($data['course_code'] == $_POST['coursecode']) {
-                $isExist = true;
-                break;
-            }
-        }
-
-        if ($isExist == false) {
-            if ($stmt->execute()) {
+        if ($stmt->execute()) {
             ?>
                 <script>
-                    window.location.href = "courses.php?page=<?= $_GET['page'] ?>";
+                    window.location.href = "subject.php?page=<?= $_GET['page'] ?>";
                 </script>
             <?php
-            }
         }
-    } else {
-        if ($stmt->execute()) {
-        ?>
-            <script>
-                window.location.href = "courses.php?page=<?= $_GET['page'] ?>";
-            </script>
-        <?php
-        }
+    
     }
-}
 ?>
 
 <!-- ************************************************************************************************************** -->
@@ -62,7 +43,7 @@ VALUES (:coursename, :coursecode, :coursetime, :teacherid)");
     $page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
     $perPage = isset($_GET['per-page']) && $_GET['per-page'] == 5 ? (int) $_GET['per-page'] : 6;
     $start = ($page > 1) ? ($page * $perPage) - $perPage : 0;
-    $total = $pdo->query("SELECT * FROM course WHERE teacher_id='$teacherid'");
+    $total = $pdo->query("SELECT * FROM subject WHERE teacher_id='$teacherid'");
     $pages = ceil($total->rowCount() / $perPage);
 
 ?>
@@ -73,9 +54,9 @@ VALUES (:coursename, :coursecode, :coursetime, :teacherid)");
 <!-- EDIT AND DELETE FUNCTION -->
 <?php
     if (isset($_GET['edit'])) {
-    $courseid = $_GET['edit'];
+    $subjectid = $_GET['edit'];
 
-    $stmt = "SELECT * FROM course WHERE course_id='$courseid'";
+    $stmt = "SELECT * FROM subject WHERE subject_id='$subjectid'";
 
     if ($result = $pdo->query($stmt)) {
 
@@ -100,16 +81,23 @@ VALUES (:coursename, :coursecode, :coursetime, :teacherid)");
 
                 <!-- MODAL HEADER -->
                 <div class="modal-header text-center ">
-                <h2 class="modal-title m-auto">EDIT COURSE</h2>
+                <h2 class="modal-title m-auto">EDIT SUBJECT</h2>
                 </div>
 
                 <!-- MODAL FORM -->
                 <div class="modal-body">
                     <!-- CREATING FORM INSIDE THE MODAL -->
                     <form action="" method="post" id="myForm">
-                        <input type="text" class="form-control-lg form-control mt-2" name="coursenameEdit" placeholder="Course Name" value="<?php echo $data['course_name']; ?>" autocomplete="off">
-                        <input type="text" class="form-control-lg form-control mt-3" name="coursecodeEdit" placeholder="Course Code" value="<?php echo $data['course_code']; ?>" autocomplete="off">
-                        <input type="time" class="form-control-lg form-control mt-3" name="coursetimeEdit" placeholder="Time" value="<?php echo $data['course_time']; ?>" autocomplete="off">
+                        <input type="text" class="form-control-lg form-control mt-2" name="subjectameEdit" placeholder="Subject Name" value="<?php echo $data['subject_name']; ?>" autocomplete="off">
+                        <input type="text" class="form-control-lg form-control mt-3" name="subjectcodeEdit" placeholder="Subject Code" value="<?php echo $data['subject_code']; ?>" autocomplete="off">
+                        <input type="time" class="form-control-lg form-control mt-3" name="starttimeEdit" placeholder="Start Time" value="<?php echo $data['start_time']; ?>" autocomplete="off">
+                        <input type="time" class="form-control-lg form-control mt-3" name="endtimeEdit" placeholder="End Time" value="<?php echo $data['end_time']; ?>" autocomplete="off">
+                        <div>
+                            <select class="form-select form-control-lg mt-3" id="async" name="syncEdit" required>
+                                <option value="MTWTHF">Mon-Tue-Wed-Thur-Fri</option>
+                                <option value="MTW">Mon-Tue-Wed</option>
+                            </select>
+                        </div>
                         <!-- MODAL BUTTONS -->
                         <div class="modal-footer mt-4">
                             <button type="submit" class="btn btn-outline-primary" name="submit">Save</button>
@@ -120,7 +108,7 @@ VALUES (:coursename, :coursecode, :coursetime, :teacherid)");
                     <script>
                         function myFunction() {
                             document.getElementById("myForm").reset();
-                                window.location.href = "courses.php?page=<?= $_GET['page'] ?>";
+                                window.location.href = "subject.php?page=<?= $_GET['page'] ?>";
                         }
                     </script>
                 </div>
@@ -134,17 +122,19 @@ VALUES (:coursename, :coursecode, :coursetime, :teacherid)");
 
         if(isset($_POST['submit'])){
 
-            $coursenameEdit = $_POST['coursenameEdit'];
-            $coursecodeEdit = $_POST['coursecodeEdit'];
-            $coursetimeEdit = $_POST['coursetimeEdit'];
+            $subjectnameEdit = $_POST['subjectnameEdit'];
+            $subjectcodeEdit = $_POST['subjectcodeEdit'];
+            $starttimeEdit = $_POST['starttimeEdit'];
+            $endtimeEdit = $_POST['endtimeEdit'];
+            $syncEdit = $_POST['syncEdit'];
         
-            $sql = "UPDATE course SET course_name='$coursenameEdit', course_code='$coursecodeEdit',
-            course_time='$coursetimeEdit' WHERE course_id='$courseid'";
+            $sql = "UPDATE subject SET subject_name='$subjectnameEdit', subject_code='$subjectcodeEdit',
+            start_time='$starttimeEdit', end_time='$endtimeEdit', sync_date='$syncEdit' WHERE subject_id='$subjectid'";
             $stmt4 = $pdo->prepare($sql);
             if($stmt4->execute()){
 
                 ?>
-                    <script> window.location.href = "courses.php?page=<?= $_GET['page'] ?>";</script>
+                    <script> window.location.href = "subject.php?page=<?= $_GET['page'] ?>";</script>
                 <?php
             }
         }
@@ -162,7 +152,7 @@ VALUES (:coursename, :coursecode, :coursetime, :teacherid)");
 if(isset($_GET['delete'])){
 
     $courseid = $_GET['delete'];
-    $stmt5 = "DELETE FROM course WHERE course_id=$courseid";
+    $stmt5 = "DELETE FROM subject WHERE subject_id=$subjectid";
 
     ?>
 
@@ -185,7 +175,7 @@ if(isset($_GET['delete'])){
                     <div class="modal-body">
                         <!-- CREATING FORM INSIDE THE MODAL -->
                         <form action="" method="post">
-                            <h4 class="text-center">Are you sure you want to delete this course?</h4>
+                            <h4 class="text-center">Are you sure you want to delete this subject?</h4>
                             <!-- MODAL BUTTONS -->
                             <div class="modal-footer mt-4 d-flex justify-content-center">
                                 <button type="submit" class="btn btn-outline-primary" name="confirm">Confirm</button>
@@ -210,7 +200,7 @@ if(isset($_GET['delete'])){
                 $pdo->exec($stmt5);
 
                 ?>
-                    <script> window.location.href = "courses.php?page=<?= $_GET['page'] ?>";</script>
+                    <script> window.location.href = "subject.php?page=<?= $_GET['page'] ?>";</script>
                 <?php
             }
                                                             
