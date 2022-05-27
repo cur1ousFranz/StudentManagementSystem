@@ -3,7 +3,7 @@
 
 if (!empty($_POST['studentno']) && !empty($_POST['firstname']) && !empty($_POST['middlename'])
 && !empty($_POST['lastname']) && !empty($_POST['age']) && !empty($_POST['gender'])
-&& !empty($_POST['civilstatus']) && !empty($_POST['nationality'])) {
+&& !empty($_POST['course']) && !empty($_POST['nationality'])) {
 
     $studentno = $_POST['studentno'];
     $firstname = $_POST['firstname'];
@@ -11,14 +11,15 @@ if (!empty($_POST['studentno']) && !empty($_POST['firstname']) && !empty($_POST[
     $lastname = $_POST['lastname'];
     $age = $_POST['age'];
     $gender = $_POST['gender'];
-    $civilstatus = $_POST['civilstatus'];
+    $courseid = $_POST['course'];
     $nationality = $_POST['nationality'];
+    $subjects = 0;
     $teacherid = $_SESSION['ID'];
 
     $stmt = $pdo->prepare("INSERT INTO student (student_no, first_name, middle_name, 
-    last_name, age, gender, civil_status, nationality)
+    last_name, age, gender, nationality, subjects, course_id)
     VALUES (:studentno, :firstname, :middlename, :lastname, :age, :gender, 
-    :civilstatus, :nationality)");
+    :nationality, :subjects, :courseid)");
 
     $stmt->bindParam(':studentno', $studentno);
     $stmt->bindParam(':firstname', $firstname);
@@ -26,8 +27,9 @@ if (!empty($_POST['studentno']) && !empty($_POST['firstname']) && !empty($_POST[
     $stmt->bindParam(':lastname', $lastname);
     $stmt->bindParam(':age', $age);
     $stmt->bindParam(':gender', $gender);
-    $stmt->bindParam(':civilstatus', $civilstatus);
+    $stmt->bindParam(':courseid', $courseid);
     $stmt->bindParam(':nationality', $nationality);
+    $stmt->bindParam(':subjects', $subjects);
 
     $stmt1 = "SELECT student_no FROM student";
     $result = $pdo->query($stmt1);
@@ -62,4 +64,19 @@ if (!empty($_POST['studentno']) && !empty($_POST['firstname']) && !empty($_POST[
         }
     }
 }
+
+// ****************FUNCTION OF FETCHING COURSES ********************************************
+
+    function courseName($courseid){
+
+        $getCourseName = array();
+        $courseNameQuery = "SELECT course_acronym FROM courses WHERE course_id='$courseid'";
+        $courseNameQueryResult = $GLOBALS['pdo']->query($courseNameQuery);
+
+        foreach($courseNameQueryResult as $data){
+            $getCourseName = $data['course_acronym'];
+        }
+
+        return $getCourseName;
+    }
 ?>

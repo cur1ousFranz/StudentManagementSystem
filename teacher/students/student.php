@@ -5,10 +5,10 @@ include('../../navbar-homepage.php');
 include('../../include-link.html');
 include('student-functions.php');
 
-if (isset($_SESSION['ID'])) {
-} else {
-    header('Location: login.php');
-}
+    if (isset($_SESSION['ID'])) {
+    } else {
+        header('Location: login.php');
+    }
 
 ?>
 <!DOCTYPE html>
@@ -27,6 +27,7 @@ if (isset($_SESSION['ID'])) {
             text-decoration: none;
             color: inherit;
         }
+
     </style>
 </head>
 
@@ -127,15 +128,21 @@ if (isset($_SESSION['ID'])) {
                                             </div>
 
                                             <div class="row">
-                                                <div class="form-floating col-6 mt-2">
-                                                    <select class="form-select" id="civilstatus" name="course" required>
-                                                        <option value="Single">Single</option>
-                                                        <option value="Married">Married</option>
+                                                <div class="col-6 mt-2" >
+                                                    <select class="form-select text" id="course" name="course" size="3" required style="font-size: 14px">
+                                                        <?php
+                                                            $courseQuery = "SELECT * FROM courses";
+                                                            $courseQueryResult = $pdo->query($courseQuery); 
+                                                            foreach($courseQueryResult as $data):
+                                                        ?>
+                                                            <option value="<?php echo $data['course_id'] ?>"><?php echo $data['course_name'] ?></option>
+                                                        <?php endforeach;?>
                                                     </select>
-                                                    <label for="civilstatus">&nbsp;&nbsp;Civil Status</label>
                                                 </div>
+
                                                 <div class="form-floating col-6 mt-2">
-                                                    <select class="form-select" id="nationality" name="nationality" required>
+                                                    <select class="form-select" id="nationality" name="nationality"
+                                                    required>
                                                         <option value="Filipino">Filipino</option>
                                                     </select>
                                                     <label for="filipino">&nbsp;&nbsp;Nationality</label>
@@ -161,72 +168,74 @@ if (isset($_SESSION['ID'])) {
                         </div>
                         <!--END OF MODAL -->  
                     </div>
-                                    <!-- TABLE CONTAINER -->
                     <!-- DISPLAYING DATA IN TABLE -->
-                    <table class="table table-striped table-hover shadow table-bordered text-center">
-                        <thead class="bg-secondary text-white text-center">
-                            <tr>
-                                <th>Student ID No</th>
-                                <th>First Name</th>
-                                <th>Middle Name</th>
-                                <th>Last Name</th>
-                                <th>Age</th>
-                                <th>Gender</th>
-                                <th>Subjects</th>
-                                <th>Course</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-
-                        <!-- DISPLAY DATA IN TABLE -->
-                        <?php
-                            $stmt2 = "SELECT * FROM student";
-                            $result2 = $pdo->query($stmt2);
-
-                            if($result2->rowCount() > 0 ){
-                            foreach($result2 as $data): 
-                        ?>
+                        <table class="table table-striped table-hover shadow table-bordered text-center">
+                            <thead class="bg-secondary text-white text-center">
                                 <tr>
-                                    <td><?php echo $data['student_no']?></td>
-                                    <td><?php echo $data['first_name']?></td>
-                                    <td><?php echo $data['middle_name']?></td>
-                                    <td><?php echo $data['last_name']?></td>
-                                    <td><?php echo $data['age']?></td>
-                                    <td><?php echo $data['gender']?></td>
-                                    <td><?php echo $data['civil_status']?></td>
-                                    <td><?php echo $data['nationality']?></td>
-                                    <td>
-                                        <div class="d-flex justify-content-center">    
-                                            <form method="get">
-                                                <a href="" class='btn btn-outline-success' title='Edit'>
-                                                     <svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-pencil-square' viewBox='0 0 16 16'>
-                                                        <path d='M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z' />
-                                                        <path fill-rule='evenodd' d='M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z' />
-                                                    </svg>
-                                                </a>
-                                            </form>
-                                        </div>
+                                    <th>Student ID</th>
+                                    <th>First Name</th>
+                                    <th>Middle Name</th>
+                                    <th>Last Name</th>
+                                    <th>Age</th>
+                                    <th>Gender</th>
+                                    <th>Subjects</th>
+                                    <th>Course</th>
+                                    <th>Nationality</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+
+                            <!-- DISPLAY DATA IN TABLE -->
+                            <?php
+                                $stmt2 = "SELECT * FROM student";
+                                $result2 = $pdo->query($stmt2);
+
+                                if($result2->rowCount() > 0 ){
+                                foreach($result2 as $data): 
+                            ?>
+                                    <tr>
+                                        <td><?php echo $data['student_no']?></td>
+                                        <td><?php echo $data['first_name']?></td>
+                                        <td><?php echo $data['middle_name']?></td>
+                                        <td><?php echo $data['last_name']?></td>
+                                        <td><?php echo $data['age']?></td>
+                                        <td><?php echo $data['gender']?></td>
+                                        <td><?php echo $data['subjects']?></td>
+                                        <!-- FETCHING COURSE FROM COURSE TABLE BASED ON COURSE_ID -->
+                                        <td><?php echo courseName($data['course_id']); ?></td>
+                                        <td><?php echo $data['nationality']?></td>
+                                        <td>
+                                            <div class="d-flex justify-content-center">    
+                                                <form method="get">
+                                                    <a href="" class='btn btn-outline-success' title='Edit'>
+                                                        <svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-pencil-square' viewBox='0 0 16 16'>
+                                                            <path d='M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z' />
+                                                            <path fill-rule='evenodd' d='M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z' />
+                                                        </svg>
+                                                    </a>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+
+                            <?php endforeach;
+                            } else {
+                                ?>
+                                <tr>
+                                    <td colspan="10">
+                                        No data to show
                                     </td>
                                 </tr>
-
-                        <?php endforeach;
-                        } else {
-                            ?>
-                            <tr>
-                                <td colspan="9">
-                                    No data to show
-                                </td>
-                            </tr>
-                        <?php
-                        }
-                            ?>
-                    </table>
+                            <?php
+                            }
+                                ?>
+                        </table>
                 </div>
             </div>
         </div>
 
     </div>
-
+    
 </body>
 
 </html>

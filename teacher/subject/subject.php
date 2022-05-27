@@ -150,7 +150,6 @@
                             </tr>
                         </thead>
 
-                        <!-- DISPLAY DATA IN TABLE -->
                         <?php
                             $stmt2 = "SELECT * FROM subject WHERE teacher_id='$teacherid' LIMIT {$start}, {$perPage}";
                             $result2 = $pdo->query($stmt2);

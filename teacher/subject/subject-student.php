@@ -3,6 +3,8 @@ session_start();
 include('../../database-connection/pdo.php');
 include('../../navbar-homepage.php');
 include('../../include-link.html');
+include('../students/student-functions.php');
+include('subject-functions.php');
 
 
 if (isset($_SESSION['ID'])) {
@@ -11,6 +13,8 @@ if (isset($_SESSION['ID'])) {
 }
 
 ?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -27,6 +31,14 @@ if (isset($_SESSION['ID'])) {
         a:active {
             text-decoration: none;
             color: inherit;
+        }
+        .wrapper {
+            max-height: 250px;
+            overflow-y: scroll;
+        }
+        .wrapper {
+            overflow-y: scroll;
+            height: 500px;
         }
     </style>
 </head>
@@ -84,7 +96,7 @@ if (isset($_SESSION['ID'])) {
                 <div class="container">
                     <ul class="nav nav-tabs" id="myTab" role="tablist">
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#studentsList" type="button" role="tab">Students List</button>
+                            <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#studentsList" type="button" role="tab">Overview</button>
                         </li>
                         <li class="nav-item" role="presentation">
                             <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#grading" type="button" role="tab">Grading</button>
@@ -94,23 +106,105 @@ if (isset($_SESSION['ID'])) {
                         </li>
                     </ul>
                     <div class="tab-content" id="myTabContent">
-                        <!-- STUDENT LIST TAB TABULAR -->
+                        <!-- OVERVIEW TAB -->
                         <div class="tab-pane fade show mt-3 active" id="studentsList" role="tabpanel">
-                            <!-- DISPLAYING DATA IN TABLE -->
-                            <table class="table table-striped table-hover shadow table-bordered text-center">
-                                <thead class="bg-secondary text-white text-center">
-                                    <tr>
-                                        <th>Student ID</th>
-                                        <th>First Name</th>
-                                        <th>Middle Name</th>
-                                        <th>Last Name</th>
-                                        <th>Gender</th>
-                                        <th>Course</th>
-                                        <th>Actions</th>
-                                        </tr>
-                                </thead>
-                                <!-- DISPLAY DATA IN TABLE -->
-                            </table>
+
+                            <div class="row">
+                                <!-- FIRST COLUMN -->
+                                <div class="col-9">
+
+                                </div>
+
+                                <!-- SECOND COLUMN -->
+                                <div class="col-3">
+                                    <div class="container d-flex justify-content-between">
+                                        <h5 class="text-center">Members</h5>
+                                        <button class="btn-primary rounded-pill" data-bs-toggle="modal" data-bs-target="#myModal">+</button>
+                                    </div>
+                                    <ul class="list-group mt-2 list-group-flush">
+<!--  -->
+                                        <li class="list-group-item">Cras justo odio</li>
+<!--  -->
+                                    </ul>
+                                </div>
+                            </div>
+
+                        <!--  MODAL -->
+                        <div class="modal fade border-bottom-danger" id="myModal">
+                            <div class="modal-dialog modal-dialog-centered modal-lg">
+                                <div class="modal-content ">
+
+                                    <!-- MODAL HEADER -->
+                                    <div class="modal-header text-center ">
+                                        <h2 class="modal-title m-auto">List of Registered Student</h2>
+                                    </div>
+
+                                    <!-- MODAL FORM -->
+                                    <div class="modal-body">
+                                        <!-- CREATING FORM INSIDE THE MODAL -->
+                                        <form action="" method="post" id="myForm">
+                                            <div class="wrapper">
+                                                <table class="table table-hover table-striped table-bordered">
+                                                    <tr>
+                                                        <th>All<input type="checkbox" class="d-block justify-content-center" name="selectAll"></th>
+                                                        <th>Student ID</th>
+                                                        <th>First Name</th>
+                                                        <th>Middle Name</th>
+                                                        <th>Last Name</th>
+                                                        <th>Age</th>
+                                                        <th>Gender</th>
+                                                        <th>Course</th>
+                                                    </tr>
+                                                    <!-- JAVASCRIPT FUNCTION THAT SELECTS ALL BOXES -->
+                                                    <script>
+                                                        $(function() {
+                                                            jQuery("[name=selectAll]").click(function(source) { 
+                                                                checkboxes = jQuery("[name='studs[]'");
+                                                                for(var i in checkboxes){
+                                                                    checkboxes[i].checked = source.target.checked;
+                                                                }
+                                                            });
+                                                        })
+                                                    </script>
+
+                                                    <?php 
+                                                        $stmt1 = "SELECT * FROM student";
+                                                        $result1 = $pdo->query($stmt1);
+
+                                                        foreach($result1 as $data):
+                                                    ?>
+                                                    <tr>
+                                                        <td><input type="checkbox" name="studs[]" value="<?php echo $data['stud_id']?>"></td>
+                                                        <td><?php echo $data['student_no']?></td>
+                                                        <td><?php echo $data['first_name']?></td>
+                                                        <td><?php echo $data['middle_name']?></td>
+                                                        <td><?php echo $data['last_name']?></td>
+                                                        <td><?php echo $data['age']?></td>
+                                                        <td><?php echo $data['gender']?></td>
+                                                        <!-- FETCHING COURSE FROM COURSE TABLE BASED ON COURSE_ID -->
+                                                        <td><?php echo courseName($data['course_id']); ?></td>
+                                                    </tr>
+                                                    <?php endforeach;?>
+                                                </table>
+                                            </div>
+                                            <div class="modal-footer mt-4 justify-content-center">
+                                                <button type="submit" class="btn btn-outline-primary w-25" name="submit">Add</button>
+                                                <button type="button" class="btn btn-outline-danger w-25" onclick="myFunction()" data-bs-dismiss="modal">Cancel</button>
+                                            </div>
+                                            
+                                        </form>
+
+                                        <!-- JAVASCRIPT TO RESET ALL THE FIELDS IN MODAL -->
+                                        <script>
+                                            function myFunction() {
+                                                document.getElementById("myForm").reset();
+                                            }
+                                        </script>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--END OF MODAL -->  
 
                         </div>
 

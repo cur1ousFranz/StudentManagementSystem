@@ -51,7 +51,7 @@
 <!-- ************************************************************************************************************** -->
 
 
-<!-- EDIT AND DELETE FUNCTION -->
+<!-- EDIT AND DELETE FUNCTION OF SUBJECT-->
 <?php
     if (isset($_GET['edit'])) {
     $subjectid = $_GET['edit'];
@@ -210,4 +210,53 @@ if(isset($_GET['delete'])){
 } //END OF DELETE FUNCTION
 ?>
 
-<!-- ************************************************************************************************************** -->
+<!-- ***** SUBJECT STUDENT FUNCTION OF CHECKBOXES MODAL**************************************************** -->
+
+<?php 
+
+    if(isset($_POST['submit'])){
+        if(!empty($_POST['studs'])){
+            $subjectID = $_GET['subject_id'];
+
+            $checkQuery = "SELECT * FROM subject_members WHERE subject_id='$subjectID'";
+            $checkQueryResult = $GLOBALS['pdo']->query($checkQuery);
+
+            foreach($_POST['studs'] as $studID){
+               
+                $studQuery = $GLOBALS['pdo']->prepare("INSERT INTO subject_members(subject_id, stud_id)
+                VALUES ($subjectID, $studID)"); 
+                
+                if($checkQueryResult->rowCount() > 0){
+                    $isExist = false;
+
+                    foreach($checkQueryResult as $temp) {
+
+                        if($temp['stud_id'] == $studID){
+                            $isExist = true;
+                            break;
+                        }
+                    }
+
+                    if($isExist == false ){
+                        $studQuery->execute();  
+                    }
+
+                }else{
+                    $studQuery->execute();  
+                }
+            }
+        }
+    }
+
+?>
+
+<!-- ******* CREATE FUNCTION THAT FETCH ALL MEMBERS IN PARTICULAR SUBJECT************************************************** -->
+
+<?php 
+
+    function subjectMembers($subjectID){
+        // TODOOOOOOOOOOOOOOOOO
+    }
+
+?>
+
