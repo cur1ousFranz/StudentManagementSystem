@@ -4,6 +4,7 @@
 if (!empty($_POST['studentno']) && !empty($_POST['firstname']) && !empty($_POST['middlename'])
 && !empty($_POST['lastname']) && !empty($_POST['age']) && !empty($_POST['gender'])
 && !empty($_POST['course']) && !empty($_POST['nationality'])) {
+    
 
     $studentno = $_POST['studentno'];
     $firstname = $_POST['firstname'];
@@ -80,3 +81,18 @@ if (!empty($_POST['studentno']) && !empty($_POST['firstname']) && !empty($_POST[
         return $getCourseName;
     }
 ?>
+
+<!-- FOR PAGINATION************************************************************************** -->
+
+<?php 
+
+    // FOR PAGINATION
+    $page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
+    $perPage = isset($_GET['per-page']) && $_GET['per-page'] == 5 ? (int) $_GET['per-page'] : 6;
+    $start = ($page > 1) ? ($page * $perPage) - $perPage : 0;
+    $total = $pdo->query("SELECT * FROM student");
+    $pages = ceil($total->rowCount() / $perPage);
+
+?>
+
+<!--  -->

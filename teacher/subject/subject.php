@@ -200,29 +200,26 @@
                         ?>
 
                     </table>
-
-                    <!-- PAGINATION -->
-                    <div class="container-fluid d-flex justify-content-end">
-                        <nav aria-label="...">
-                            <ul class="pagination shadow">
-                                <li class="page-item <?php if($page == 1){ echo 'disabled';} else {echo '';}?>">
-                                    <a href="?page=<?php echo $page  - 1;?>" class="page-link">Previous</a>
-                                </li>
-                                <?php for($i = 1; $i <= $pages; $i++):?>
-                                <li class="page-item <?php if($page == $i) { echo 'active'; } ?>">
-                                    <a class="page-link" href="?page=<?php echo $i; ?>"><?php echo $i?></a>
-                                </li>
-                                <?php  endfor;?>
-                                <li class="page-item <?php if($page == $pages){ echo 'disabled';} else {echo '';} if($pages == 0){ echo 'disabled';}?>">
-                                    <a href="?page=<?php echo $page  + 1;?>" class="page-link" class="page-link">Next</a>
-                                </li>
-                            </ul>
-                        </nav>
-                    </div>
-
+                </div>
+                <!-- PAGINATION -->
+                <div class="container-fluid d-flex justify-content-end">
+                    <nav aria-label="...">
+                        <ul class="pagination shadow">
+                            <li class="page-item <?php if($page == 1){ echo 'disabled';} else {echo '';}?>">
+                                <a href="?page=<?php echo $page  - 1;?>" class="page-link">Previous</a>
+                            </li>
+                            <?php for($i = 1; $i <= $pages; $i++):?>
+                            <li class="page-item <?php if($page == $i) { echo 'active'; } ?>">
+                                <a class="page-link" href="?page=<?php echo $i; ?>"><?php echo $i?></a>
+                            </li>
+                            <?php  endfor;?>
+                            <li class="page-item <?php if($page == $pages){ echo 'disabled';} else {echo '';} if($pages == 0){ echo 'disabled';}?>">
+                                <a href="?page=<?php echo $page  + 1;?>" class="page-link" class="page-link">Next</a>
+                            </li>
+                        </ul>
+                    </nav>
                 </div>
             </div>
-
         </div>
 
     </div>

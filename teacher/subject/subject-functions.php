@@ -151,8 +151,8 @@
 // DELETE FUNCTION
 if(isset($_GET['delete'])){
 
-    $courseid = $_GET['delete'];
-    $stmt5 = "DELETE FROM subject WHERE subject_id=$subjectid";
+    $subjectDeleteID = $_GET['delete'];
+    $stmt5 = "DELETE FROM subject WHERE subject_id=$subjectDeleteID";
 
     ?>
 
@@ -225,10 +225,22 @@ if(isset($_GET['delete'])){
                
                 $studQuery = $GLOBALS['pdo']->prepare("INSERT INTO subject_members(subject_id, stud_id)
                 VALUES ($subjectID, $studID)"); 
+
+                // THIS IS FOR COUNTING THE ENROLLED SUBJECTS OF STUDENT
+                $countSubjectQuery = "SELECT *
+                                    FROM subject_members
+                                    WHERE stud_id='$studID'";
+                $countSubjectQueryResult = $GLOBALS['pdo']->query($countSubjectQuery);
+                $count = $countSubjectQueryResult->rowCount() + 1;
                 
+                // UPDATING THE SUBJECT COUNT THAT WILL REFLECT TO TABLE
+                $updateCountSubject = "UPDATE student
+                                    SET subjects='$count'
+                                    WHERE stud_id='$studID'";
+                $updateCountSubjectResult = $GLOBALS['pdo']->prepare($updateCountSubject);
+
                 if($checkQueryResult->rowCount() > 0){
                     $isExist = false;
-
                     foreach($checkQueryResult as $temp) {
 
                         if($temp['stud_id'] == $studID){
@@ -238,11 +250,18 @@ if(isset($_GET['delete'])){
                     }
 
                     if($isExist == false ){
-                        $studQuery->execute();  
+                        
+                        if($studQuery->execute()){
+                            $updateCountSubjectResult->execute();
+                        }
+                        
                     }
 
                 }else{
-                    $studQuery->execute();  
+
+                    if($studQuery->execute()){
+                        $updateCountSubjectResult->execute();
+                    }
                 }
             }
         }
@@ -255,7 +274,34 @@ if(isset($_GET['delete'])){
 <?php 
 
     function subjectMembers($subjectID){
-        // TODOOOOOOOOOOOOOOOOO
+        
+        $subjectMember = array();
+        $innerQuery = "SELECT student.first_name, student.last_name 
+        FROM student 
+        INNER JOIN subject_members
+        ON student.stud_id  = subject_members.stud_id
+        WHERE subject_members.subject_id = '$subjectID'";
+
+        $innerQueryResult = $GLOBALS['pdo']->query($innerQuery);
+        
+        foreach($innerQueryResult as $data){
+            echo "<li class='list-group mt-2'>".$data['last_name'] . ", " . $data['first_name'].'</li>';
+        }
+        return $subjectMember;
+    }
+    
+?>
+
+<!-- FUNTION THAT COUNTS THE MEMBERS IN PARTICULAR SUBJECT -->
+
+<?php 
+
+    function countMembers($subjectID){
+        
+        $countMembers = "SELECT * FROM subject_members WHERE subject_id='$subjectID'";
+        $countMembersResult = $GLOBALS['pdo']->query($countMembers);
+
+        return $countMembersResult->rowCount();
     }
 
 ?>
