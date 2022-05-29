@@ -306,3 +306,53 @@ if(isset($_GET['delete'])){
 
 ?>
 
+<!-- INSERT CREATED MATERIAL TO DATABASE************************************************ -->
+
+<?php 
+
+    if(isset($_POST['imgSubmit'])){
+
+        // FETCHING THE ID OF SELECTED ICON
+        $materialIconsID = 0;
+        if(isset( $_POST['iconradio'])){
+            $materialIconsID = $_POST['iconradio'];
+        }
+    
+        $materialName = $_POST['materialname'];
+        $teacherid = $_SESSION['ID'];
+        $subjectid = $_GET['subject_id'];
+
+        $materialQuery = $GLOBALS['pdo']->prepare("INSERT INTO teacher_materials(material_name, teacher_id, subject_id, material_icons_id)
+        VALUES (:materialname, :teacherid, :subjectid, :materialIconsID)");
+
+        $materialQuery->bindParam(':materialname', $materialName);
+        $materialQuery->bindParam(':teacherid', $teacherid);
+        $materialQuery->bindParam(':subjectid', $subjectid);
+        $materialQuery->bindParam(':materialIconsID', $materialIconsID);
+
+        $checkIconQuery = "SELECT * FROM teacher_materials WHERE teacher_id='$teacherid' AND subject_id='$subjectid'";
+        $checkIconQueryResult = $GLOBALS['pdo']->query($checkIconQuery);
+
+        // CHECKING FOR DUPLICATION OF MATERIAL NAME
+        if($checkIconQueryResult->rowCount() > 0){
+            $isExist = false;
+            foreach($checkIconQueryResult as $checkQuery){
+            
+                if($checkQuery['material_name'] == $materialName){
+                    $isExist = true;
+                    break;
+                }
+            }
+
+            if($isExist == false){
+                $materialQuery->execute();
+            }
+        }else{
+            $materialQuery->execute();
+        }
+        
+    }
+    
+?>
+
+
