@@ -66,20 +66,7 @@ if (!empty($_POST['studentno']) && !empty($_POST['firstname']) && !empty($_POST[
     }
 }
 
-// ****************FUNCTION OF FETCHING COURSES ********************************************
 
-    function courseName($courseid){
-
-        $getCourseName = array();
-        $courseNameQuery = "SELECT course_acronym FROM courses WHERE course_id='$courseid'";
-        $courseNameQueryResult = $GLOBALS['pdo']->query($courseNameQuery);
-
-        foreach($courseNameQueryResult as $data){
-            $getCourseName = $data['course_acronym'];
-        }
-
-        return $getCourseName;
-    }
 ?>
 
 <!-- FOR PAGINATION************************************************************************** -->

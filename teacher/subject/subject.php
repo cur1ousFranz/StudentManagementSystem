@@ -5,11 +5,16 @@
     include('../../include-link.html');
     include('subject-functions.php');
 
-
     if (isset($_SESSION['ID'])) {
     } else {
         header('Location: login.php');
     }
+
+    $teacherid = $_SESSION['ID'];
+    $pgnObj = new Pagination($teacherid);
+    $subObj = new Subject($teacherid);
+    editSubject();
+    deleteSubject();
 
 ?>
 <!DOCTYPE html>
@@ -136,7 +141,7 @@
 
                     </div>
 
-                    <!-- DISPLAYING DATA IN TABLE -->
+                    <!-- DISPLAYING SUBJECTS IN TABLE -->
                     <table class="table table-striped table-hover shadow table-bordered">
                         <thead class="bg-secondary text-white text-center">
                             <tr>
@@ -149,72 +154,23 @@
                                 <th>Action</th>
                             </tr>
                         </thead>
-
-                        <?php
-                            $stmt2 = "SELECT * FROM subject WHERE teacher_id='$teacherid' LIMIT {$start}, {$perPage}";
-                            $result2 = $pdo->query($stmt2);
-
-                            if ($result2->rowCount() > 0) {
-
-                                foreach ($result2 as $data): 
-                        ?>
-                                <tr class="text-center">
-                                    <td><?php echo $data['subject_name']; ?></td>
-                                    <td><?php echo $data['subject_code']; ?></td>
-                                    <td><?php echo $data['start_time']; ?></td>
-                                    <td><?php echo $data['end_time']; ?></td>
-                                    <td><?php echo $data['sync_date']; ?></td>
-                                    <td><a href="subject-student.php?subject_id=<?= $data['subject_id'] ?>&page=<?= $_GET['page']?>" class="text-primary">View</a></td>
-                                    <td>
-                                        <div class="d-flex justify-content-center">    
-                                            <form method="get">
-                                                <a href="?edit=<?= $data['subject_id'] ?>&page=<?= $_GET['page']?>" class='btn btn-outline-success' title='Edit Subject'>
-                                                     <svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-pencil-square' viewBox='0 0 16 16'>
-                                                        <path d='M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z' />
-                                                        <path fill-rule='evenodd' d='M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z' />
-                                                    </svg>
-                                                </a>
-
-                                                <a href="?delete=<?= $data['subject_id']?>&page=<?=$_GET['page']?>" class='btn btn-outline-danger' title='Delete Subject'>
-                                                    <svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-trash3-fill' viewBox='0 0 16 16'>
-                                                        <path d='M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5Zm-5 0v1h4v-1a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5ZM4.5 5.029l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06Zm6.53-.528a.5.5 0 0 0-.528.47l-.5 8.5a.5.5 0 0 0 .998.058l.5-8.5a.5.5 0 0 0-.47-.528ZM8 4.5a.5.5 0 0 0-.5.5v8.5a.5.5 0 0 0 1 0V5a.5.5 0 0 0-.5-.5Z' />
-                                                    </svg>
-                                                </a>
-                                            </form>
-                                        </div>
-                                    </td>
-                                </tr>
-                        <?php endforeach;
-                                
-                            } else {
-
-                                ?>
-                                    <tr class="text-center">
-                                        <td colspan="7">
-                                            No data to show
-                                        </td>
-                                    </tr>
-                                <?php
-                                
-                            }
-                        ?>
-
+                        <?php $subObj->displaySubjects(); ?> 
                     </table>
                 </div>
                 <!-- PAGINATION -->
                 <div class="container-fluid d-flex justify-content-end">
                     <nav aria-label="...">
                         <ul class="pagination shadow">
-                            <li class="page-item <?php if($page == 1){ echo 'disabled';} else {echo '';}?>">
-                                <a href="?page=<?php echo $page  - 1;?>" class="page-link">Previous</a>
+                            <li class="page-item <?php if($pgnObj->page() == 1){ echo 'disabled';} else {echo '';}?>">
+                                <a href="?page=<?php echo $pgnObj->page()  - 1;?>" class="page-link">Previous</a>
                             </li>
-                            <?php for($i = 1; $i <= $pages; $i++):?>
-                            <li class="page-item <?php if($page == $i) { echo 'active'; } ?>">
+                            <?php for($i = 1; $i <= $pgnObj->pages(); $i++):?>
+                            <li class="page-item <?php if($pgnObj->page() == $i) { echo 'active'; } ?>">
                                 <a class="page-link" href="?page=<?php echo $i; ?>"><?php echo $i?></a>
                             </li>
                             <?php  endfor;?>
-                            <li class="page-item <?php if($page == $pages){ echo 'disabled';} else {echo '';} if($pages == 0){ echo 'disabled';}?>">
-                                <a href="?page=<?php echo $page  + 1;?>" class="page-link" class="page-link">Next</a>
+                            <li class="page-item <?php if($pgnObj->page() == $pgnObj->pages()){ echo 'disabled';} else {echo '';} if( $pgnObj->pages() == 0){ echo 'disabled';}?>">
+                                <a href="?page=<?php echo $pgnObj->page()  + 1;?>" class="page-link" class="page-link">Next</a>
                             </li>
                         </ul>
                     </nav>

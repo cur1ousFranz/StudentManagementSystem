@@ -18,18 +18,7 @@
             </div>
         </div>
         <ul class="navbar-nav">
-            <li class="nav-item">
-                <a href="#" class="nav-link active">Home</a>
-            </li>
-            <li class="nav-item">
-                <a href="#" class="nav-link active">About</a>
-            </li>
-            <li class="nav-item">
-                <a href="#" class="nav-link active">Event</a>
-            </li>
-            <li class="nav-item">
-                <a href="#" class="nav-link active">Category</a>
-            </li>
+<!--  -->
         </ul>
     </nav>
 

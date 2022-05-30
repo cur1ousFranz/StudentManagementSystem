@@ -4,6 +4,7 @@ include('../../database-connection/pdo.php');
 include('../../navbar-homepage.php');
 include('../../include-link.html');
 include('student-functions.php');
+include('../subject/subject-functions.php');
 
     if (isset($_SESSION['ID'])) {
     } else {
@@ -201,7 +202,7 @@ include('student-functions.php');
                                         <td><?php echo $data['age']?></td>
                                         <td><?php echo $data['gender']?></td>
                                         <td><?php echo $data['subjects']?></td>
-                                        <!-- FETCHING COURSE FROM COURSE TABLE BASED ON COURSE_ID -->
+                                        <!-- FETCHING COURSE FROM SUBJECT TABLE BASED ON COURSE_ID -->
                                         <td><?php echo courseName($data['course_id']); ?></td>
                                         <td><?php echo $data['nationality']?></td>
                                         <td>

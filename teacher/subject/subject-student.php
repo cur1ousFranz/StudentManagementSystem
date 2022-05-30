@@ -1,17 +1,19 @@
 <?php
-session_start();
-include('../../database-connection/pdo.php');
-include('../../navbar-homepage.php');
-include('../../include-link.html');
-include('../students/student-functions.php');
-include('subject-functions.php');
 
+    session_start();
+    include('../../database-connection/pdo.php');
+    include('../../navbar-homepage.php');
+    include('../../include-link.html');
+    include('../students/student-functions.php');
+    include('subject-functions.php');
 
-if (isset($_SESSION['ID'])) {
-} else {
-    header('Location: login.php');
-}
+    if (isset($_SESSION['ID'])) {
+    } else {
+        header('Location: login.php');
+    }
 
+    addMembers();
+    insertMaterial();
 ?>
 
 
@@ -81,17 +83,10 @@ if (isset($_SESSION['ID'])) {
             
             <div class="col-9">
                 <div class="container mt-5">
-                    <?php 
-                        if(isset($_GET['subject_id'])){
-                            $subjectid = $_GET['subject_id'];
-                            $stmt = "SELECT * FROM subject WHERE subject_id='$subjectid'";
-                            $result = $pdo->query($stmt);
+                    <?php  $subjectQuery = subjectQuery(); ?>
+                    <h3><?php echo $subjectQuery['subject_name'];?></h3>
+                    <h6>Subject time: <?php echo $subjectQuery['start_time'] . " - " .  $subjectQuery['end_time'] . " " . $subjectQuery['sync_date'] ?> </h6>
 
-                            foreach($result as $data):
-                    ?>
-                    <h3><?php echo $data['subject_name'];?></h3>
-                    <h6>Subject time: <?php echo $data['start_time'] . " - " .  $data['end_time'] . " " . $data['sync_date'] ?> </h6>
-                    <?php endforeach;}?>
                 </div>
                 <div class="container">
                     <ul class="nav nav-tabs" id="myTab" role="tablist">
@@ -114,42 +109,8 @@ if (isset($_SESSION['ID'])) {
                                     <div class="row">
 
                                         <div class="col-10">
-
-                                            <?php 
-                                                $teacherid = $_SESSION['ID'];
-                                                $subjectid = $_GET['subject_id'];
-                                                    
-                                                $queryTeacherMaterial = "SELECT * FROM teacher_materials 
-                                                WHERE teacher_id='$teacherid' AND subject_id='$subjectid'";
-                            
-                                                   $queryTeacherMaterialResult = $GLOBALS['pdo']->query($queryTeacherMaterial);
-                                                    
-                                                if($queryTeacherMaterialResult->rowCount() > 0){
-                                            
-                                                    foreach($queryTeacherMaterialResult as $temp){
-                                                
-                                                        $iconID = $temp['material_icons_id'];
-                                                        $queryMaterialIcons = "SELECT * FROM material_icons WHERE material_icons_id='$iconID'";
-                                                        $queryMaterialIconsResult = $GLOBALS['pdo']->query($queryMaterialIcons);
-
-                                                        foreach($queryMaterialIconsResult as $temp2){
-                                                            ?>
-                                                                <div class="container mt-3">
-                                                                    <img class="" src="data:image/jpng;charset=utf8;base64,<?php echo base64_encode($temp2['image']); ?>" style="width: 30px;"/>
-                                                                    &nbsp;&nbsp;<a href="" class="link-secondary text-decoration-underline"><?php echo strtoupper($temp['material_name']) ?></a>
-                                                                </div>
-                                                            <?php
-                                                        }
-                                                    }
-
-                                                 } else {
-                                                     ?>
-                                                         <div class="container text-secondary">
-                                                            <h6>No files to show</h6>
-                                                        </div>
-                                                    <?php
-                                                }
-                                            ?>
+                                            <!-- DISPLAYING THE MATERIALS IN PARTICULAR SUBJECT CREATED BY TEACHER -->
+                                            <?php teacherMaterial(); ?>
 
                                         </div>
 
@@ -184,21 +145,7 @@ if (isset($_SESSION['ID'])) {
                                                             </div>
                                                             <h6 class="mt-2 ms-2">Choose file icon</h6>
                                                             <div class="container">
-                                                            <?php
-
-                                                                $imgQuery = "SELECT * FROM material_icons";
-                                                                $imgQueryResult = $pdo->query($imgQuery);
-                                                                foreach($imgQueryResult as $iconData):
-
-                                                            ?>
-                                                            <!-- RADIO BUTTONS OF ICONS -->
-                                                                <div class="form-check">
-                                                                    <input type="radio" class="form-check-input" id="radio1" name="iconradio" value="<?php echo $iconData['material_icons_id']?>" checked>
-                                                                    <label class="form-check-label" for="radio1">
-                                                                    <img src="data:image/jpg;charset=utf8;base64,<?php echo base64_encode($iconData['image']); ?>" style="width: 30px;"/>
-                                                                    </label>
-                                                                </div>
-                                                            <?php endforeach;?>
+                                                                <?php materialIconInModal(); ?>
                                                             </div>
 
                                                             <div class="modal-footer mt-4 justify-content-center">
@@ -207,7 +154,6 @@ if (isset($_SESSION['ID'])) {
                                                             </div>
                                                             </ul>
                                                         </form>
-
                                                         <!-- JAVASCRIPT TO RESET ALL THE FIELDS IN MODAL -->
                                                         <script>
                                                             function myFunction() {
@@ -236,9 +182,7 @@ if (isset($_SESSION['ID'])) {
                                     <hr>
                                     <ul class="list-group list-group-flush">
                                         <!-- CALLING A FUNCTION TO GENERATE MEMBERS IN SUBJECT -->
-                                        <?php 
-                                            $memberFullName = subjectMembers($_GET['subject_id']);
-                                        ?>
+                                        <?php subjectMembers($_GET['subject_id']); ?>
                                     </ul>
                                 </div>
                             </div>
@@ -280,32 +224,14 @@ if (isset($_SESSION['ID'])) {
                                                             });
                                                         })
                                                     </script>
-
-                                                    <?php 
-                                                        $stmt1 = "SELECT * FROM student";
-                                                        $result1 = $pdo->query($stmt1);
-
-                                                        foreach($result1 as $data):
-                                                    ?>
-                                                    <tr>
-                                                        <td><input type="checkbox" name="studs[]" value="<?php echo $data['stud_id']?>"></td>
-                                                        <td><?php echo $data['student_no']?></td>
-                                                        <td><?php echo $data['first_name']?></td>
-                                                        <td><?php echo $data['middle_name']?></td>
-                                                        <td><?php echo $data['last_name']?></td>
-                                                        <td><?php echo $data['age']?></td>
-                                                        <td><?php echo $data['gender']?></td>
-                                                        <!-- FETCHING COURSE FROM COURSE TABLE BASED ON COURSE_ID -->
-                                                        <td><?php echo courseName($data['course_id']); ?></td>
-                                                    </tr>
-                                                    <?php endforeach;?>
+                                                    <!-- CALLING A FUNCTION TO DISPLAY STUDENTS IN MODAL -->
+                                                <?php listOfStudents(); ?> 
                                                 </table>
                                             </div>
                                             <div class="modal-footer mt-4 justify-content-center">
                                                 <button type="submit" class="btn btn-outline-primary w-25" name="submit">Add</button>
                                                 <button type="button" class="btn btn-outline-danger w-25" onclick="myFunction()" data-bs-dismiss="modal">Cancel</button>
                                             </div>
-                                            
                                         </form>
 
                                         <!-- JAVASCRIPT TO RESET ALL THE FIELDS IN MODAL -->
@@ -321,11 +247,6 @@ if (isset($_SESSION['ID'])) {
                         <!--END OF MODAL -->  
 
                         </div>
-
-
-
-
-
 
 
 
