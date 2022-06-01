@@ -15,6 +15,7 @@
     $subObj = new Subject($teacherid);
     editSubject();
     deleteSubject();
+    insertSubject();
 
 ?>
 <!DOCTYPE html>

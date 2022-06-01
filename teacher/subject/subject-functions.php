@@ -1,34 +1,37 @@
 <?php
-    /**************** INSERT SUBJECT CREATED  ******************************** */
+    /**************** INSERT SUBJECT CREATED TO DATABASE ******************************** */
 
-    if (!empty($_POST['subjectname']) && !empty($_POST['subjectcode']) 
-    && !empty($_POST['starttime']) && !empty($_POST['endtime']) && !empty($_POST['sync'])) {
+    function insertSubject(){
 
-    $subjectname = $_POST['subjectname'];
-    $subjectcode = $_POST['subjectcode'];
-    $starttime = $_POST['starttime'];
-    $endtime = $_POST['endtime'];
-    $sync = $_POST['sync'];
-    $teacherid = $_SESSION['ID'];
-
-    $stmt = $pdo->prepare("INSERT INTO subject (subject_name, subject_code, start_time, end_time, sync_date, teacher_id)
-    VALUES (:subjectname, :subjectcode, :starttime, :endtime, :sync, :teacherid)");
-
-    $stmt->bindParam(':subjectname', $subjectname);
-    $stmt->bindParam(':subjectcode', $subjectcode);
-    $stmt->bindParam(':starttime', $starttime);
-    $stmt->bindParam(':endtime', $endtime);
-    $stmt->bindParam(':sync', $sync);
-    $stmt->bindParam(':teacherid', $teacherid);
-
-        if ($stmt->execute()) {
-            ?>
-                <script>
-                    window.location.href = "subject.php?page=<?= $_GET['page'] ?>";
-                </script>
-            <?php
-        }
+        if (!empty($_POST['subjectname']) && !empty($_POST['subjectcode']) 
+        && !empty($_POST['starttime']) && !empty($_POST['endtime']) && !empty($_POST['sync'])) {
     
+        $subjectname = $_POST['subjectname'];
+        $subjectcode = $_POST['subjectcode'];
+        $starttime = $_POST['starttime'];
+        $endtime = $_POST['endtime'];
+        $sync = $_POST['sync'];
+        $teacherid = $_SESSION['ID'];
+    
+        $queryInsertSubj = $GLOBALS['pdo']->prepare("INSERT INTO subject (subject_name, subject_code, start_time, end_time, sync_date, teacher_id)
+        VALUES (:subjectname, :subjectcode, :starttime, :endtime, :sync, :teacherid)");
+    
+        $queryInsertSubj->bindParam(':subjectname', $subjectname);
+        $queryInsertSubj->bindParam(':subjectcode', $subjectcode);
+        $queryInsertSubj->bindParam(':starttime', $starttime);
+        $queryInsertSubj->bindParam(':endtime', $endtime);
+        $queryInsertSubj->bindParam(':sync', $sync);
+        $queryInsertSubj->bindParam(':teacherid', $teacherid);
+    
+            if ($queryInsertSubj->execute()) {
+                ?>
+                    <script>
+                        window.location.href = "subject.php?page=<?= $_GET['page'] ?>";
+                    </script>
+                <?php
+            }
+        
+        }
     }
 
      /******************************* CLASS OF PAGINATION  *************************************** */
@@ -316,7 +319,7 @@
         return $arr;
     }
 
-    /********** FUNCTION THAT DISPLAYS ALL THE MATERIAL OF PARTICULAR SUBEJECT  ************* */
+    /********** FUNCTION THAT DISPLAYS ALL THE MATERIAL OF PARTICULAR SUBJECT  ************* */
 
     function teacherMaterial(){
 
@@ -395,24 +398,40 @@
 
     function listOfStudents(){
 
-        $stmt1 = "SELECT * FROM student";
-        $result1 = $GLOBALS['pdo']->query($stmt1);
+        $querySelectStudent = "SELECT * FROM student";
+        $querySelectStudentResult = $GLOBALS['pdo']->query($querySelectStudent);
 
-        foreach($result1 as $data){
-        ?>
-            <tr>
-                <td><input type="checkbox" name="studs[]" value="<?php echo $data['stud_id']?>"></td>
-                <td><?php echo $data['student_no']?></td>
-                <td><?php echo $data['first_name']?></td>
-                <td><?php echo $data['middle_name']?></td>
-                <td><?php echo $data['last_name']?></td>
-                <td><?php echo $data['age']?></td>
-                <td><?php echo $data['gender']?></td>
-                <!-- FETCHING COURSE FROM COURSE TABLE BASED ON COURSE_ID -->
-                <td><?php echo courseName($data['course_id']); ?></td>
-            </tr>
-        <?php
-   
+        foreach($querySelectStudentResult as $temp){
+
+            // CHECKING IF THE STUDENT IS ALREADY A MEMBER OF THE SUBJECT
+            $subjectID = $_GET['subject_id'];
+            $querySelectSubMembers = "SELECT * FROM subject_members WHERE subject_id='$subjectID'";
+            $querySelectSubMembersResult = $GLOBALS['pdo']->query($querySelectSubMembers);
+
+            $isExist = false;
+            foreach($querySelectSubMembersResult as $data){
+
+                if($data['stud_id'] == $temp['stud_id']){
+                    $isExist = true;
+                    break;
+                }
+            }
+
+            if($isExist == false){
+                ?>
+                    <tr>
+                        <td><input type="checkbox" name="studs[]" value="<?php echo $temp['stud_id']?>"></td>
+                        <td><?php echo $temp['student_no']?></td>
+                        <td><?php echo $temp['first_name']?></td>
+                        <td><?php echo $temp['middle_name']?></td>
+                        <td><?php echo $temp['last_name']?></td>
+                        <td><?php echo $temp['age']?></td>
+                        <td><?php echo $temp['gender']?></td>
+                        <!-- FETCHING COURSE FROM COURSE TABLE BASED ON COURSE_ID -->
+                        <td><?php echo courseName($temp['course_id']); ?></td>
+                    </tr>
+                <?php
+            }
         }
     }
 
@@ -460,7 +479,9 @@
                             if($studQuery->execute()){
                                 $updateCountSubjectResult->execute();
                             }
-                            
+                        ?>
+                            <script> window.location.href = "subject-student.php?subject_id=<?= $_GET['subject_id'] ?>";</script>
+                        <?php
                         }
     
                     }else{
@@ -474,7 +495,7 @@
         }
     }
 
-    /*********** CREATE FUNCTION THAT FETCH ALL MEMBERS IN PARTICULAR SUBJECTL ************** */
+    /*********** CREATE FUNCTION THAT FETCH ALL MEMBERS IN PARTICULAR SUBJECT ************** */
 
     function subjectMembers($subjectID){
         
@@ -487,7 +508,8 @@
         $innerQueryResult = $GLOBALS['pdo']->query($innerQuery);
         
         foreach($innerQueryResult as $data){
-            echo "<li class='list-group mt-2'>".$data['last_name'] . ", " . $data['first_name'].'</li>';
+            echo "<li class='list-group mt-2 d-block'>".$data['last_name'] . ", " . $data['first_name'] . '</li>';
+            
         }
     }
 

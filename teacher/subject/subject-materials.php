@@ -11,6 +11,8 @@ if (isset($_SESSION['ID'])) {
     header('Location: login.php');
 }
 
+    insertFile();
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -69,10 +71,69 @@ if (isset($_SESSION['ID'])) {
                     <img class="" src="data:image/jpng;charset=utf8;base64,<?php echo base64_encode($materialIconsArray['image']); ?>" style="width: 30px;"/>
                     &nbsp;<a><strong><?php echo strtoupper($teacherMaterialArray['material_name'])?></strong></a>
                 </div>
-
                 <hr>
-            </div>
+                <div class="row">
+                    <div class="col-10">
+                        <ul class="list-group list-group-flush">
+                            <?php displayPdfFile();?>
+                        </ul>
+                    </div>
+                    <div class="col-2">
+                        <div class="container">
+                            <button class="btn float-end" data-bs-toggle="modal" data-bs-target="#uploadModal">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-file-earmark-arrow-up" viewBox="0 0 16 16">
+                                    <path d="M8.5 11.5a.5.5 0 0 1-1 0V7.707L6.354 8.854a.5.5 0 1 1-.708-.708l2-2a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 7.707V11.5z"/>
+                                    <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z"/>
+                                </svg>
+                            </button>
 
+                            <button class="btn float-end" data-bs-toggle="modal" data-bs-target="#">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-folder-plus" viewBox="0 0 16 16">
+                                    <path d="m.5 3 .04.87a1.99 1.99 0 0 0-.342 1.311l.637 7A2 2 0 0 0 2.826 14H9v-1H2.826a1 1 0 0 1-.995-.91l-.637-7A1 1 0 0 1 2.19 4h11.62a1 1 0 0 1 .996 1.09L14.54 8h1.005l.256-2.819A2 2 0 0 0 13.81 3H9.828a2 2 0 0 1-1.414-.586l-.828-.828A2 2 0 0 0 6.172 1H2.5a2 2 0 0 0-2 2zm5.672-1a1 1 0 0 1 .707.293L7.586 3H2.19c-.24 0-.47.042-.683.12L1.5 2.98a1 1 0 0 1 1-.98h3.672z"/>
+                                    <path d="M13.5 10a.5.5 0 0 1 .5.5V12h1.5a.5.5 0 1 1 0 1H14v1.5a.5.5 0 1 1-1 0V13h-1.5a.5.5 0 0 1 0-1H13v-1.5a.5.5 0 0 1 .5-.5z"/>
+                                </svg>
+                            </button>
+
+                            <!--  MODAL -->
+                            <div class="modal fade" id="uploadModal">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content ">
+
+                                        <!-- MODAL HEADER -->
+                                        <div class="modal-header text-center ">
+                                            <h4 class="modal-title">Upload File</h4>
+                                        </div>
+
+                                        <!-- MODAL FORM -->
+                                        <div class="modal-body">
+                                            <!-- CREATING FORM INSIDE THE MODAL -->
+                                            <form action="" method="post" id="myForm" enctype="multipart/form-data">
+                                                <div class="form-floating">
+                                                    <input id="filename" type="text" class="form-control-lg form-control mt-2" placeholder="File name" name="filename" autocomplete="off" maxlength="50" required>
+                                                    <label for="filename">File name</label>
+                                                </div>
+                                                <input type="file" name="file" class="form-control mt-3" >
+                                                <div class="modal-footer mt-4 justify-content-center">
+                                                    <button type="submit" class="btn btn-outline-primary w-25" name="fileSubmit">Add</button>
+                                                    <button type="button" class="btn btn-outline-danger w-25" onclick="myFunction()" data-bs-dismiss="modal">Cancel</button>
+                                                </div>
+                                            </form>
+                                            <!-- JAVASCRIPT TO RESET ALL THE FIELDS IN MODAL -->
+                                            <script>
+                                                function myFunction() {
+                                                    document.getElementById("myForm").reset();
+                                                }
+                                            </script>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--END OF MODAL -->
+                        </div>
+                    </div>
+                </div>
+
+                
         </div>
     </div>
 
