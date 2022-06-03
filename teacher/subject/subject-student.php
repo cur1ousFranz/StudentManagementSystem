@@ -111,7 +111,7 @@
                                         <div class="col-10">
                                             <!-- DISPLAYING THE MATERIALS IN PARTICULAR SUBJECT CREATED BY TEACHER -->
                                             <?php teacherMaterial(); ?>
-
+        
                                         </div>
 
                                         <div class="col-2">
@@ -142,6 +142,10 @@
                                                             <div class="form-floating">
                                                                 <input id="materialname" type="text" class="form-control-lg form-control mt-2" placeholder="File name" name="materialname" autocomplete="off" maxlength="50" required>
                                                                 <label for="materialname">Material Name</label>
+                                                            </div>
+                                                            <div class="form-floating">
+                                                                <input id="materialname" type="text" class="form-control-lg form-control mt-2" placeholder="Description" name="desc" autocomplete="off" maxlength="50" required>
+                                                                <label for="materialname">Description</label>
                                                             </div>
                                                             <h6 class="mt-2 ms-2">Choose file icon</h6>
                                                             <div class="container">

@@ -114,7 +114,7 @@ if (isset($_SESSION['ID'])) {
                                                 </div>
                                                 <input type="file" name="file" class="form-control mt-3" >
                                                 <div class="modal-footer mt-4 justify-content-center">
-                                                    <button type="submit" class="btn btn-outline-primary w-25" name="fileSubmit">Add</button>
+                                                    <button type="submit" class="btn btn-outline-primary w-25" name="fileSubmit">Confirm</button>
                                                     <button type="button" class="btn btn-outline-danger w-25" onclick="myFunction()" data-bs-dismiss="modal">Cancel</button>
                                                 </div>
                                             </form>

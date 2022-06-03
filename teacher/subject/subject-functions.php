@@ -340,10 +340,13 @@
                 $queryMaterialIconsResult = $GLOBALS['pdo']->query($queryMaterialIcons);
 
                 foreach($queryMaterialIconsResult as $temp2){
-                    ?>
+                    ?>  
                         <div class="container mt-3">
                             <img class="" src="data:image/jpng;charset=utf8;base64,<?php echo base64_encode($temp2['image']); ?>" style="width: 30px;"/>
-                            &nbsp;&nbsp;<a href="subject-materials.php?subject_id=<?= $_GET['subject_id'] ?>&material_id=<?= $temp['material_id']?>" class="link-secondary text-decoration-underline"><?php echo strtoupper($temp['material_name']) ?></a>
+                            &nbsp;<strong><a href="subject-materials.php?subject_id=<?= $_GET['subject_id'] ?>&material_id=<?= $temp['material_id']?>" class="link-secondary text-decoration-underline"><?php echo strtoupper($temp['material_name']) ?></a></strong>
+                            <div class="container">
+                                <p class="link-secondary ms-3" style="font-size: 13px"><?php echo $temp['description']?></p>
+                            </div>
                         </div>
                     <?php
                 }
@@ -536,16 +539,18 @@
             }
         
             $materialName = $_POST['materialname'];
+            $description = $_POST['desc'];
             $teacherid = $_SESSION['ID'];
             $subjectid = $_GET['subject_id'];
     
-            $materialQuery = $GLOBALS['pdo']->prepare("INSERT INTO teacher_materials(material_name, teacher_id, subject_id, material_icons_id)
-            VALUES (:materialname, :teacherid, :subjectid, :materialIconsID)");
+            $materialQuery = $GLOBALS['pdo']->prepare("INSERT INTO teacher_materials(material_name, description, material_icons_id, teacher_id, subject_id)
+            VALUES (:materialname, :description, :materialIconsID, :teacherid, :subjectid)");
     
             $materialQuery->bindParam(':materialname', $materialName);
+            $materialQuery->bindParam(':description', $description);
+            $materialQuery->bindParam(':materialIconsID', $materialIconsID);
             $materialQuery->bindParam(':teacherid', $teacherid);
             $materialQuery->bindParam(':subjectid', $subjectid);
-            $materialQuery->bindParam(':materialIconsID', $materialIconsID);
     
             $checkIconQuery = "SELECT * FROM teacher_materials WHERE teacher_id='$teacherid' AND subject_id='$subjectid'";
             $checkIconQueryResult = $GLOBALS['pdo']->query($checkIconQuery);

@@ -28,6 +28,7 @@
             foreach($queryTeacherMaterialsResult as $data){
                 $arr['material_name'] = $data['material_name'];
                 $arr['material_icons_id'] = $data['material_icons_id'];
+                $arr['description'] = $data['description'];
             }
         }
         return $arr;
@@ -56,7 +57,6 @@
     
     
             $files = $_FILES['file']['name'];
-            $files_type = $_FILES['file']['type'];
             $files_size = $_FILES['file']['size'];
             $files_temp_loc = $_FILES['file']['tmp_name'];
            

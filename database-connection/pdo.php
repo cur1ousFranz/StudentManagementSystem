@@ -3,7 +3,7 @@
 $servername = "localhost";
 $username = "root";
 $password = "";
-$db = "student_management_system";
+$db = "sms_db";
 
     try{
         $GLOBALS['pdo'] = new PDO("mysql:host=$servername;dbname=$db", $username, $password);
