@@ -18,11 +18,12 @@
             $nationality = $_POST['nationality'];
             $subjects = 0;
             $teacherid = $_SESSION['ID'];
+            $loginID = 0;
         
             $stmt = $GLOBALS['pdo']->prepare("INSERT INTO student (student_no, first_name, middle_name, 
-            last_name, age, gender, nationality, subjects, course_id)
+            last_name, age, gender, nationality, subjects, course_id, log_in_id)
             VALUES (:studentno, :firstname, :middlename, :lastname, :age, :gender, 
-            :nationality, :subjects, :courseid)");
+            :nationality, :subjects, :courseid, :loginid)");
         
             $stmt->bindParam(':studentno', $studentno);
             $stmt->bindParam(':firstname', $firstname);
@@ -33,6 +34,18 @@
             $stmt->bindParam(':courseid', $courseid);
             $stmt->bindParam(':nationality', $nationality);
             $stmt->bindParam(':subjects', $subjects);
+            $stmt->bindParam(':loginid', $loginID);
+
+            $queryStudentLogin = $GLOBALS['pdo']->prepare("INSERT INTO log_in (username, pass, role)
+            VALUES (:username, :pass, :role)");
+
+            $username = $studentno;
+            $pass = $studentno; 
+            $role = "student";
+
+            $queryStudentLogin->bindParam(':username', $username);
+            $queryStudentLogin->bindParam(':pass', $pass);
+            $queryStudentLogin->bindParam(':role', $role);
         
             $stmt1 = "SELECT student_no FROM student";
             $result = $GLOBALS['pdo']->query($stmt1);
@@ -49,7 +62,9 @@
                 }
         
                 if ($isExist == false) {
-                    if ($stmt->execute()) {
+                    if ($queryStudentLogin->execute()) {
+                        $loginID = $GLOBALS['pdo']->lastInsertId();
+                        $stmt->execute();
                     ?>
                         <script> 
                             window.location.href = "student.php";
@@ -58,7 +73,9 @@
                     }
                 }
             } else {
-                if ($stmt->execute()) {
+                if ($queryStudentLogin->execute()) {
+                    $loginID = $GLOBALS['pdo']->lastInsertId();
+                    $stmt->execute();
                 ?>
                     <script>
                         window.location.href = "student.php";

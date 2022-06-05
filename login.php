@@ -29,38 +29,56 @@ session_start();
         </div>
         <div class="container text-center">
             <hr>
-            <p><a href="register.php">Don't have an account?</a></p>
+            <p>Want to create account as a teacher? <u class="text-primary">Contact us</u></p>
         </div>
     </div>
 
     <?php
 
-    if (isset($_POST['submit'])) {
+        if(isset($_POST['submit'])){
+            $username = $_POST['username'];
+            $pass = $_POST['pass'];
 
-        $username = $_POST['username'];
-        $pass = $_POST['pass'];
+            $queryLogin = "SELECT * FROM log_in WHERE username='$username' AND pass='$pass'";
+            $queryLoginResult = $GLOBALS['pdo']->query($queryLogin);
 
-        $stmt = "SELECT * FROM log_in WHERE username='$username' AND pass='$pass'";
-        $result = $pdo->query($stmt);
+            
 
-        if ($result->rowCount() == 1) {
+            if($queryLoginResult->rowCount() == 1){
+                echo $queryLoginResult->rowCount();
+                
+                foreach($queryLoginResult as $data){
 
-            $stmt = "SELECT teacher_id FROM log_in WHERE username='$username' ";
-            $result = $pdo->query($stmt);
-            foreach ($result as $data) {
-                $_SESSION['ID'] = $data['teacher_id'];
+                    if($data['role'] == "teacher"){
+                        $loginID = $data['log_in_id'];
+
+                        $queryTeacher = "SELECT teacher_id FROM teacher WHERE log_in_id='$loginID'";
+                        $queryTeacherResult = $GLOBALS['pdo']->query($queryTeacher);
+
+                        foreach($queryTeacherResult as $data2){
+                            $_SESSION['ID'] = $data2['teacher_id'];
+                            header('Location: homepage.php');
+                        }
+                        
+                    }
+
+                    if($data['role'] == "student"){
+                        $loginID = $data['log_in_id'];
+                        $queryStudent = "SELECT student_no FROM student WHERE log_in_id='$loginID'";
+                        $queryStudentResult = $GLOBALS['pdo']->query($queryStudent);
+
+                        foreach($queryStudentResult as $data2){
+                            $_SESSION['ID'] = $data2['stud_id'];
+                            header('Location: student/student-hmpg.php');
+                        }
+                    }
+                }
+                
+            }else{
+                echo "No such account";
             }
-            header('Location: homepage.php');
-        } else {
-
-    ?>
-            <div class="alert alert-warning" role="alert">
-                Incorrect Username or Password!
-            </div>
-    <?php
 
         }
-    }
 
     ?>
 
